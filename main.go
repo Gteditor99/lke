@@ -22,7 +22,6 @@ func parseArgs() []string {
 }
 func main() {
 	app := app.New()
-
 	// Create a new window and set its default size
 	w := app.NewWindow("lke - .ltx Properties Viewer")
 	w.Resize(fyne.NewSize(600, 400))
