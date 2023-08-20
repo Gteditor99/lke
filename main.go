@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -16,14 +17,19 @@ var filesPath []string = parseArgs()
 var properties, keys = getProperties(filesPath)
 func parseArgs() []string {
 	if len(os.Args) < 2 {
-		log.Fatalln("Not enough arguments: \nUsage: go run main.go <file path>...")
+		fmt.Println("No file path provided. Please drag and drop your .ltx file here:")
+		var filePath string
+		fmt.Scanln(&filePath)
+		filePath = strings.Trim(filePath, "\"")
+		return []string{filePath}
 	}
 	return os.Args[1:]
 }
 func main() {
 	app := app.New()
 	// Create a new window and set its default size
-	w := app.NewWindow("lke - .ltx Properties Viewer")
+	fileName := strings.Split(filesPath[0], "/")[len(strings.Split(filesPath[0], "/"))-1]
+	w := app.NewWindow("lke - .ltx Properties Viewer | " + fileName)
 	w.Resize(fyne.NewSize(600, 400))
 
 
