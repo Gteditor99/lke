@@ -13,8 +13,11 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var filesPath []string = parseArgs()
-var properties, keys = getProperties(filesPath)
+var (
+	filesPath        []string = parseArgs()
+	properties, keys          = getProperties(filesPath)
+)
+
 func parseArgs() []string {
 	if len(os.Args) < 2 {
 		fmt.Println("No file path provided. Please drag and drop your .ltx file here:")
@@ -25,13 +28,13 @@ func parseArgs() []string {
 	}
 	return os.Args[1:]
 }
+
 func main() {
 	app := app.New()
 	// Create a new window and set its default size
 	fileName := strings.Split(filesPath[0], "/")[len(strings.Split(filesPath[0], "/"))-1]
 	w := app.NewWindow("lke - .ltx Properties Viewer | " + fileName)
 	w.Resize(fyne.NewSize(600, 400))
-
 
 	container := container.NewVBox()
 	properties, keys := getProperties(filesPath)
@@ -43,7 +46,7 @@ func main() {
 			Text:   key,
 			Widget: entry,
 		}))
-	
+
 		saveButton := widget.NewButton("Save", func() {
 			properties[key] = entry.Text
 			found := false
@@ -58,41 +61,39 @@ func main() {
 			if !found {
 				keys = append(keys, key)
 			}
-    		// Save changes to file
+			// Save changes to file
 			ltxFilePath := os.Args[1:]
-    		// Overwrite file
+			// Overwrite file
 			file, err := os.OpenFile(ltxFilePath[0], os.O_WRONLY|os.O_TRUNC, 0644)
-    		if err != nil {
-    		    log.Fatal(err)
-    		}
-    		defer file.Close()
-    		for _, key := range keys {
-    		    _, err := file.WriteString(key + "=" + properties[key] + "\n")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file.Close()
+			for _, key := range keys {
+				_, err := file.WriteString(key + "=" + properties[key] + "\n")
 				println(key + "=" + properties[key] + "\n")
-    		    if err != nil {
-    		        log.Fatal(err)
-    		    }
-    		}
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
 		})
-	
+
 		undoButton := widget.NewButton("Undo", func() {
 			entry.SetText(properties[key])
 		})
-		
+
 		container.Add(saveButton)
 		container.Add(undoButton)
 
 		container.Add(widget.NewSeparator())
-		
+
 	}
 
 	// footer
-container.Add(widget.NewLabel("ltx key-value editor by @editor99 (github.com/gteditor99/ltx)"))
-w.SetContent(container)
-w.ShowAndRun()
-	
+	container.Add(widget.NewLabel("ltx key-value editor by @editor99 (github.com/gteditor99/ltx)"))
+	w.SetContent(container)
+	w.ShowAndRun()
 }
-
 
 // Modify getProperties to return a slice of keys in addition to the map
 func getProperties(filesPath []string) (map[string]string, []string) {
@@ -101,11 +102,11 @@ func getProperties(filesPath []string) (map[string]string, []string) {
 	for _, filePath := range filesPath {
 		file, err := os.Open(filePath)
 		if err != nil {
-		   log.Fatal(err)
+			log.Fatal(err)
 		}
 		defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
 			line := scanner.Text()
 			split := strings.SplitN(line, "=", 2)
 			if len(split) == 2 {
